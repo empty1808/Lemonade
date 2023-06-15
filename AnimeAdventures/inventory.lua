@@ -1,7 +1,7 @@
 local modules = {}
 
 local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
-local tables = library.requires('tables.lua');
+local tables = librarys.requires('tables.lua');
 local loader = require(game.ReplicatedStorage.src.Loader);
 
 local session = loader.load_client_service(script, 'ItemInventoryServiceClient').session;

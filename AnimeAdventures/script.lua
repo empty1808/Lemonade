@@ -3,12 +3,12 @@ local HttpService = game:GetService("HttpService");
 local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
 
 local UI = librarys.requires('VenyxUI.lua');
-local maps = ibrarys.requires('AnimeAdventures/maps.lua');
-local inventory = ibrarys.requires('AnimeAdventures/inventory.lua');
-local functions = ibrarys.requires('AnimeAdventures/functions.lua');
-local numbers = ibrarys.requires('numbers.lua');
-local handlers = ibrarys.requires('AnimeAdventures/handlers.lua');
-local tables = ibrarys.requires('tables.lua');
+local maps = librarys.requires('AnimeAdventures/maps.lua');
+local inventory = librarys.requires('AnimeAdventures/inventory.lua');
+local functions = librarys.requires('AnimeAdventures/functions.lua');
+local numbers = librarys.requires('numbers.lua');
+local handlers = librarys.requires('AnimeAdventures/handlers.lua');
+local tables = librarys.requires('tables.lua');
 
 local LocalPlayer = game.Players.LocalPlayer;
 

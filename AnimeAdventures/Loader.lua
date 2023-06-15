@@ -1,5 +1,5 @@
 local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
-local tables = library.requires('tables.lua');
+local tables = librarys.requires('tables.lua');
 
 if not (getgenv()['Lemonade']) then
     getgenv()['Lemonade'] = {
