@@ -1,11 +1,14 @@
 local HttpService = game:GetService("HttpService");
-local library = loadstring(readfile('Lemonade/AnimeAdventures/VenyxUI.lua'))();
-local maps = loadstring(readfile('Lemonade/AnimeAdventures/maps.lua'))();
-local inventory = loadstring(readfile('Lemonade/AnimeAdventures/inventory.lua'))();
-local functions = loadstring(readfile('Lemonade/AnimeAdventures/functions.lua'))();
-local numbers = loadstring(readfile('Lemonade/AnimeAdventures/numbers.lua'))();
-local handlers = loadstring(readfile('Lemonade/AnimeAdventures/handlers.lua'))();
-local tables = loadstring(readfile('Lemonade/AnimeAdventures/tables.lua'))();
+
+local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
+
+local UI = librarys.requires('VenyxUI.lua');
+local maps = ibrarys.requires('AnimeAdventures/maps.lua');
+local inventory = ibrarys.requires('AnimeAdventures/inventory.lua');
+local functions = ibrarys.requires('AnimeAdventures/functions.lua');
+local numbers = ibrarys.requires('numbers.lua');
+local handlers = ibrarys.requires('AnimeAdventures/handlers.lua');
+local tables = ibrarys.requires('tables.lua');
 
 local LocalPlayer = game.Players.LocalPlayer;
 
@@ -50,7 +53,7 @@ local features = {
 local Elements = {};
 
 function onCreateGUI()
-    Elements['GUI'] = library.new('Lemonade [Anime Adventures]', 5013109572);
+    Elements['GUI'] = UI.new('Lemonade [Anime Adventures]', 5013109572);
 
     Elements['JoinPage'] = Elements['GUI']:addPage('Join', 13630055077);
     Elements['MacroPage'] = Elements['GUI']:addPage('Macro', 5012544693);
