@@ -7,6 +7,7 @@ if not (getgenv()['Lemonade']) then
 end
 
 if not (getgenv()['Lemonade'].executes) then
+    print('Started loading script... [Loader.lua]');
     getgenv()['Lemonade'].executes = true;
 
     repeat wait() until game:IsLoaded();
@@ -38,4 +39,5 @@ if not (getgenv()['Lemonade'].executes) then
     end
 
     loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/script.lua'))();
+    print('Completed loading script... [Loader.lua]')
 end
