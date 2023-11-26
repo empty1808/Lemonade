@@ -37,5 +37,5 @@ if not (getgenv()['Lemonade'].executes) then
         game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
     end
 
-    loadstring(readfile('Lemonade\\AnimeAdventures\\script.lua'))();
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/script.lua'))();
 end
