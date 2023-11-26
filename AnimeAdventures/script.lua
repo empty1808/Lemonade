@@ -530,7 +530,7 @@ function onPlayMacro()
     local _macro_playing = local_macro and local_macro or ScriptSaved.macro.select;
 
     if (_macro_playing) then
-        local json_cache = game:HttpGet('Lemonade\\AnimeAdventures\\Macros\\'.._macro_playing..'.json');
+        local json_cache = readfile('Lemonade\\AnimeAdventures\\Macros\\'.._macro_playing..'.json');
         if (json_cache) and (json_cache ~= '') and (json_cache ~= '{}') then
             local macro_cache = HttpService:JSONDecode(json_cache);
             if (macro_cache) then
