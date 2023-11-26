@@ -1,7 +1,7 @@
 local modules = {};
 
 local function loadlibrary(original)
-    return loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/'..tostring(original)..'.lua'))();
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/'..tostring(original)))();
 end
 
 modules.LocalPlayer = game.Players.LocalPlayer;
