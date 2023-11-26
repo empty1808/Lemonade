@@ -1,7 +1,8 @@
 local modules = {}
 
-local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
-local tables = librarys.requires('tables.lua');
+local librarys = loadstring(readfile('Lemonade/AnimeAdventures/librarys.lua'))();
+local tables = librarys.tables;
+
 local loader = require(game.ReplicatedStorage.src.Loader);
 
 local session = loader.load_client_service(script, 'ItemInventoryServiceClient').session;
@@ -54,22 +55,45 @@ function modules.getUniqueItemsIf(condition)
     return results;
 end
 
+function modules.getUniqueItemIf(condition)
+    for i, element in pairs (modules.getUniqueItems()) do
+        local insert = condition and condition(element) or false;
+        if (insert and (insert == true)) then
+            return element;
+        end
+    end
+end
+
 function modules.getPortals(id)
     return modules.getUniqueItemsIf(function(item)
-        if (item['item_id'] == 'portal_item__'..id) then
+        if (item['item_id'] == 'portal_'..id) then
             return true;
         end
     end)
 end
 
-function modules.filterMadokaPortal(filters)
-    for _, portal in pairs (modules.getPortals('madoka')) do
+function modules.filterIgnorePortal(portal_id, filters)
+    filters = tables.copyElement({}, filters);
+    for _, portal in pairs (modules.getPortals(portal_id)) do
         local data = portal['_unique_item_data']['_unique_portal_data'];
         tables.replace(filters['ignore-challenge'], 'high_cost', 'double_cost');
-        if ((not tables.containsValue(filters['ignore-tier'], data['portal_depth'])) and (not tables.containsValue(filters['ignore-challenge'], data['challenge'])) and (not tables.containsValue(filters['ignore-buff'], data['_weak_against'][1]['damage_type']))) then
+        if ((not tables.containsValue(filters['ignore-tier'], data['portal_depth'])) and (not tables.containsValue(filters['ignore-challenge'], data['challenge']))) then
             return portal;
         end
     end
+end
+
+function modules.filterTierPortals(portal_id, filters)
+    filters = tables.copyElement({}, filters);
+    local portals = {};
+    for _, portal in pairs (modules.getPortals(portal_id)) do
+        local data = portal['_unique_item_data']['_unique_portal_data'];
+        tables.replace(filters['challenge'], 'high_cost', 'double_cost');
+        if ((tables.containsValue(filters['tier'], data['portal_depth'])) or (tables.containsValue(filters['challenge'], data['challenge']))) then
+            table.insert(portals, portal);
+        end
+    end
+    return portals;
 end
 
 return modules;

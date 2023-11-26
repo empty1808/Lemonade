@@ -1,5 +1,4 @@
-local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
-local tables = librarys.requires('tables.lua');
+local tables = loadstring(readfile('Lemonade/AnimeAdventures/librarys/tables.lua'))();
 
 if not (getgenv()['Lemonade']) then
     getgenv()['Lemonade'] = {
@@ -20,8 +19,7 @@ if not (getgenv()['Lemonade'].executes) then
     LocalPlayer.OnTeleport:Connect(function(state)
         if state == Enum.TeleportState.InProgress then
             queue_on_teleport([[
-                local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
-                librarys.requires('AnimeAdventures/Loader.lua');
+                loadstring(readfile('Lemonade\\AnimeAdventures\\Loader.lua'))();
             ]])
         elseif state == Enum.TeleportState.Failed then
             wait(2.5);
@@ -39,6 +37,5 @@ if not (getgenv()['Lemonade'].executes) then
         game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
     end
 
-
-    librarys.requires('AnimeAdventures/script.lua');
+    loadstring(readfile('Lemonade\\AnimeAdventures\\script.lua'))();
 end

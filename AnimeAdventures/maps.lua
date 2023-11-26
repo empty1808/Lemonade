@@ -1,48 +1,23 @@
 local modules = {};
 
-modules.maps = {
-    ['Planet Namak'] = {
-        id = 'namek'
-    },
-    ['Shinganshinu District'] = {
-        id = 'aot'
-    },
-    ['Snowy Town'] = {
-        id = 'demonslayer'
-    },
-    ['Hidden Sand Village'] = {
-        id = 'naruto'
-    },
-    ["Marine's Ford"] = {
-        id = 'marineford'
-    },
-    ['Ghoul City'] = {
-        id = 'tokyoghoul'
-    },
-    ['Hollow World'] = {
-        id = ''
-    },
-    ['Ant Kingdom'] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
-    [''] = {
-        id = ''
-    },
+modules.prioritize_maps = {
+    ['namek'] = 1,
+    ['aot'] = 2,
+    ['demonslayer'] = 3,
+    ['naruto'] = 4,
+    ['marineford'] = 5,
+    ['tokyo_ghoul'] = 6,
+    ['hueco'] = 7,
+    ['hxhant'] = 8,
+    ['magnolia'] = 9,
+    ['jjk'] = 10,
+    ['clover'] = 11,
+    ['jojo'] = 12,
+    ['opm'] = 13,
+    ['7ds'] = 14,
+    ['mha'] = 15,
+    ['dressrosa'] = 16,
+    ['sao'] = 17
 }
 
 function modules.get(key)

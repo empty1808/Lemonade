@@ -1,35 +1,59 @@
 local HttpService = game:GetService("HttpService");
+local library = loadstring(readfile('Lemonade/AnimeAdventures/VenyxUI.lua'))();
 
-local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/librarys.lua'))();
+local librarys = loadstring(readfile('Lemonade/AnimeAdventures/librarys.lua'))();
 
-local UI = librarys.requires('VenyxUI.lua');
-local maps = librarys.requires('AnimeAdventures/maps.lua');
-local inventory = librarys.requires('AnimeAdventures/inventory.lua');
-local functions = librarys.requires('AnimeAdventures/functions.lua');
-local numbers = librarys.requires('numbers.lua');
-local handlers = librarys.requires('AnimeAdventures/handlers.lua');
-local tables = librarys.requires('tables.lua');
+local maps = loadstring(readfile('Lemonade/AnimeAdventures/maps.lua'))();
+local inventory = loadstring(readfile('Lemonade/AnimeAdventures/inventory.lua'))();
+local handlers = loadstring(readfile('Lemonade/AnimeAdventures/handlers.lua'))();
+local game_data = loadstring(readfile('Lemonade/AnimeAdventures/game_data.lua'))();
+local level_data = loadstring(readfile('Lemonade/AnimeAdventures/level_data.lua'))();
+
+local functions = librarys.functions;
+local portals = librarys.portals;
+
+local strings = librarys.strings;
+local tables = librarys.tables;
+local numbers = librarys.numbers;
 
 local LocalPlayer = game.Players.LocalPlayer;
 
 local ScriptSaved = {
-    ['join'] = {
+    ['main'] = {
         ['default'] = {
             ['enable'] = false,
             ['selected'] = nil,
             ['stage'] = nil,
-            ['difficult'] = nil
+            ['difficult'] = nil,
+            ['replay'] = false
         },
-        ['madoka-portal'] = {
+        ['portal'] = {
+            ['selected'] = {},
+            ['replay'] = false
+        },
+        ['tier-portal'] = {
             ['enable'] = false,
             ['ignore-tier'] = {},
             ['ignore-challenge'] = {},
-            ['ignore-buff'] = {},
             ['replay'] = false
+        },
+        ['misc'] = {
+            ['auto-leave'] = false,
+            ['auto-stack-wendy'] = false,
+            ['auto-stack-erwin'] = false
         }
     },
+    ['lobby'] = {
+        ['delete-tier-portals'] = {
+            ['enable'] = false,
+            ['tier'] = {},
+            ['challenge'] = {}
+        },
+
+    },
     ['macro'] = {
-        ['select'] = nil;
+        ['select'] = nil,
+        ['infinite_tower'] = {}
     }
 }
 
@@ -47,52 +71,54 @@ local macro = {
 local features = {
     ['join'] = false,
     ['replay'] = false,
-    ['playing-macro'] = false
+    ['playing-macro'] = false,
+    ['stack-wendy'] = {
+        enabled = false,
+        models = {};
+    },
+    ['stack-erwin'] = {
+        enabled = false,
+        models = {};
+    },
+    ['stack-leafa_evolved'] = {
+        enabled = false,
+        models = {};
+    }
 }
 
 local Elements = {};
 
 function onCreateGUI()
-    Elements['GUI'] = UI.new('Lemonade [Anime Adventures]', 5013109572);
+    Elements['GUI'] = library.new('Lemonade [Anime Adventures]', 5013109572);
 
-    Elements['JoinPage'] = Elements['GUI']:addPage('Join', 13630055077);
+    Elements['MainPage'] = Elements['GUI']:addPage('Main', 13630055077);
+    Elements['LobbyPage'] = Elements['GUI']:addPage('Lobby');
     Elements['MacroPage'] = Elements['GUI']:addPage('Macro', 5012544693);
+    Elements['TimingsPage'] = Elements['GUI']:addPage('Timings');
     Elements['SettingPage'] = Elements['GUI']:addPage('Settings', 13710659541);
 
-    onJoinPage(Elements['JoinPage']);
+    onMainPage(Elements['MainPage']);
+    onLobbyPage(Elements['LobbyPage']);
     onMacroPage(Elements['MacroPage']);
     onSettingPage(Elements['SettingPage']);
 end
 
-function onJoinPage(page)
-    local Default = page:addSection('Default');
+function onMainPage(page)
     --local Raid = page:addSection('Raid');
     --local Dungeon = page:addSection('Dungeon');
     --local Challenge = page:addSection('Challenge');
-    local MadokaPortal = page:addSection('Madoka Portal');
-    
 
-    Default:addToggle('enabled', ScriptSaved.join.default.enable, function(toggle)
-        
-    end)
-    Default:addDropdown('selected', maps.getMaps(), nil, function(text)
-        
-    end)
-    Default:addDropdown('stage', {'infinite', 'act-1', 'act-2', 'act-3', 'act-4', 'act-5', 'act-6'}, nil, function(selected)
-        print(selected)
-    end)
-    Default:addDropdown('difficult', {'easy', 'hard'}, nil, function(selected)
-        
-    end)
-
-    onMadokaPortal(MadokaPortal);
+    onDefault(page:addSection('Default'));
+    onPortal(page:addSection('Portal'));
+    onTierPortal(page:addSection('Tier Portal'));
+    onMiscSection(page:addSection('Misc'));
 end
 
 function onDefault(section)
-    section:addToggle('enabled', ScriptSaved.join.default.enable, function(toggle)
-        
+    section:addToggle('Enable', ScriptSaved.main.default.enable, function(toggle)
+        ScriptSaved.main.default.enable = toggle;
     end)
-    section:addDropdown('selected', maps.getMaps(), nil, function(text)
+    section:addDropdown('selected', game_data.getInfiniteWorldId(), nil, function(text)
         
     end)
     section:addDropdown('stage', {'infinite', 'act-1', 'act-2', 'act-3', 'act-4', 'act-5', 'act-6'}, nil, function(selected)
@@ -101,32 +127,104 @@ function onDefault(section)
     section:addDropdown('difficult', {'easy', 'hard'}, nil, function(selected)
         
     end)
+    section:addToggle('Next/Replay', ScriptSaved.main.default.replay, function(toggle)
+        ScriptSaved.main.default.replay = toggle;
+    end)
 end
 
-function onMadokaPortal(section)
-    local Features = ScriptSaved.join['madoka-portal'];
+function onPortal(section)
+    local portals_name = tables.getIf(portals.getSinglePortals(), function(element)
+        return element.name;
+    end);
+
+    local features = ScriptSaved.main['portal'];
+    local selected = section:addSelectDropdown('Selected', portals_name, features['selected'], function(selected)
+        ScriptSaved.main['portal']['selected'] = selected;
+    end)
+    local replay = section:addToggle('Replay', features['replay'], function(toggle)
+        ScriptSaved.main['portal'].replay = toggle;
+    end)
+end
+
+function onTierPortal(section)
+    local Features = ScriptSaved.main['tier-portal'];
     local Enable = section:addToggle('enabled', Features.enable, function(toggle)
-        ScriptSaved.join['madoka-portal'].enable = toggle;
+        ScriptSaved.main['tier-portal'].enable = toggle;
     end)
     local Tier = section:addSelectDropdown('ign tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['ignore-tier'], function(selected)
-        ScriptSaved.join['madoka-portal']['ignore-tier'] = selected;
+        ScriptSaved.main['tier-portal']['ignore-tier'] = selected;
     end)
     local Challenge section:addSelectDropdown('ign challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['ignore-challenge'], function(selected)
-        ScriptSaved.join['madoka-portal']['ignore-challenge'] = selected;
-    end)
-    local Buff = section:addSelectDropdown('ign buff', {'physical', 'magic'}, Features['ignore-buff'], function(selected)
-        ScriptSaved.join['madoka-portal']['ignore-buff'] = selected;
+        ScriptSaved.main['tier-portal']['ignore-challenge'] = selected;
     end)
     local Replay = section:addToggle('replay', Features.replay, function(toggle)
-        ScriptSaved.join['madoka-portal'].replay = toggle;
+        ScriptSaved.main['tier-portal'].replay = toggle;
+    end)
+end
+
+function onMiscSection(section)
+    section:addToggle('auto leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
+        ScriptSaved.main.misc['auto-leave'] = toggle;
+    end)
+
+    section:addToggle('Auto Wenda', ScriptSaved.main.misc['auto-wendy'], function(toggle)
+        ScriptSaved.main.misc['auto-wendy'] = toggle;
+        if not (toggle) then 
+            features['stack-wendy'].enabled = false;
+        end
+    end)
+
+    section:addToggle('Auto Orwin', ScriptSaved.main.misc['auto-erwin'], function(toggle)
+        ScriptSaved.main.misc['auto-erwin'] = toggle;
+        if not (toggle) then 
+            features['stack-erwin'].enabled = false;
+        end
+    end)
+
+    section:addToggle('Auto Leafy', ScriptSaved.main.misc['auto-leafa_evolved'], function(toggle)
+        ScriptSaved.main.misc['auto-leafa_evolved'] = toggle;
+        if not (toggle) then 
+            features['stack-leafa_evolved'].enabled = false;
+        end
+    end)
+
+    section:addToggle('Teleport to Top [FPS Boost]', ScriptSaved.main.misc['teleport-to-top'], function(toggle)
+        ScriptSaved.main.misc['teleport-to-top'] = toggle;
+        if not (toggle) then
+            features['teleport-to-top'] = false;
+        end
+    end)
+end
+
+function onLobbyPage(page)
+    local Misc = page:addSection('Misc');
+    Misc:addButton('back to lobby', function()
+        game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+    end);
+    local AutoDeleteTierPortals = page:addSection('Auto Delete Tier Portals');
+    onAutoDeleteTierPortals(AutoDeleteTierPortals);
+end
+
+function onAutoDeleteTierPortals(section)
+    local Features = ScriptSaved.lobby['delete-tier-portals'];
+    local Enable = section:addToggle('enabled', Features.enable, function(toggle)
+        ScriptSaved.lobby['delete-tier-portals'].enable = toggle;
+    end)
+    local Tier = section:addSelectDropdown('tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['tier'], function(selected)
+        ScriptSaved.lobby['delete-tier-portals']['tier'] = selected;
+    end)
+    local Challenge section:addSelectDropdown('challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['challenge'], function(selected)
+        ScriptSaved.lobby['delete-tier-portals']['challenge'] = selected;
     end)
 end
 
 function onMacroPage(page)
-    Elements['MacroSystem'] = page:addSection('Macro System');
+    Elements['MacroSystem'] = page:addSection('System');
+    Elements['CastleMacros'] = page:addSection('Castle Macros');
     Elements['MacroTimings'] = page:addSection('Macro Timings');
 
     onMacroSystem(Elements['MacroSystem']);
+    onCastleMacros(Elements['CastleMacros']);
     onMacroTimings(Elements['MacroTimings']);
 end
 
@@ -137,7 +235,7 @@ function onMacroSystem(section)
             if (text == '') then
                 return
             end
-            if not (tables.containsValue(macro.macros, text)) then
+            if not (librarys.tables.containsValue(macro.macros, text)) then
                 table.insert(macro.macros, text);
                 writefile('Lemonade\\AnimeAdventures\\Macros\\'..text..'.json', '{}');
                 section:updateDropdown(modules['select'], nil, nil, ScriptSaved.macro.select);
@@ -152,11 +250,29 @@ function onMacroSystem(section)
         ScriptSaved.macro.select = text
     end)
 
-    modules['remove'] = section:addButton('remove', function()
-        print(macro.cache.length)
+    modules['clean-up'] = section:addButton('clean-up macro', function()
+        if (ScriptSaved.macro.select) then
+            writefile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json', '{}');
+            notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been cleaned up.', 1.5);
+        end
+    end)
+
+    modules['remove'] = section:addButton('remove macro', function()
+        if (ScriptSaved.macro.select) then
+            delfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json');
+            librarys.tables.remove(macro.macros, ScriptSaved.macro.select);
+            ScriptSaved.macro.select = nil;
+            section:updateDropdown(modules['select'], nil, nil, 'nil');
+            notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been removed.', 1.5)
+        end
     end)
 
     modules['record'] = section:addToggle('record', false, function(toggle)
+        if (toggle) and (functions.isLobby()) then
+            section:updateToggle(modules['record'], 'record', false);
+            notify('Warning', 'You cant record macro in lobby.', 1.5);
+            return;
+        end
         if (toggle) and not (ScriptSaved.macro.select) then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'You have not selected macro.', 1.5);
@@ -167,17 +283,37 @@ function onMacroSystem(section)
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
         end
+        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+            section:updateToggle(modules['record'], 'record', false);
+            notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
+            return;
+        end
+        notify('Notification', 'Recording macro "'..ScriptSaved.macro.select..'".', 1.5);
         macro.record = toggle;
     end)
 
-    modules['play'] = section:addToggle('play', ScriptSaved.macro.play, function(toggle)
+    modules['play'] = section:addToggle('Play', ScriptSaved.macro.play, function(toggle)
         if (toggle) and not (ScriptSaved.macro.select) then
-            section:updateToggle(modules['play'], 'record', false);
+            section:updateToggle(modules['play'], 'Play', false);
             notify('Warning', 'You have not selected macro.', 1.5);
             return
         end
         ScriptSaved.macro.play = toggle;
     end)
+end
+
+function onCastleMacros(section)
+    local worlds = game_data.getWorlds();
+    local properties = {
+        TitleSize = UDim2.new(0.38, 0, 0, 30),
+        ContainerPosition = UDim2.new(0.4, 0, 0, 0),
+        ContainerSize = UDim2.new(0.6, 0, 1, 0)
+    }
+    for k, v in pairs (game_data.getInfiniteWorldId()) do
+        section:addCustomDropdown(properties, worlds[v].name, macro.macros, ScriptSaved.macro.infinite_tower[v], function(text)
+            ScriptSaved.macro.infinite_tower[v] = text;
+        end)
+    end
 end
 
 function onMacroTimings(section)
@@ -192,7 +328,7 @@ function onSettingPage(page)
 end
 
 function onSettingDefault(section)
-    section:addKeybind('Toggle Keybind', Enum.KeyCode.LeftControl, function()
+    section:addKeybind('Toggle Keybind', Enum.KeyCode.Delete, function()
         Elements['GUI']:toggle();
     end)
 end
@@ -235,7 +371,7 @@ function remoteHandler()
                         elseif (remote.Name == 'upgrade_unit_ingame') then
                             local model = unpack(args);
                             local unit_id = model['_stats'].id.Value;
-                            local position = model.HumanoidRootPart.CFrame;
+                            local position = model._shadow.CFrame;
                             local data = {
                                 ['type'] = 'upgrade_unit',
                                 ['unit-id'] = unit_id,
@@ -281,7 +417,8 @@ function loadScriptSaved()
     if (isfile(fileName)) then
         local jsonString = readfile(fileName);
         if (jsonString and (jsonString ~= '')) then
-            ScriptSaved = HttpService:JSONDecode(jsonString);
+            --ScriptSaved = HttpService:JSONDecode(jsonString);
+            librarys.tables.copyElement(ScriptSaved, HttpService:JSONDecode(jsonString));
         end
     end
 end
@@ -311,23 +448,55 @@ function loadMacro()
     end
 end
 
+function onAutoDeleteTierPortalsEvent()
+    local results = {};
+    local portals = inventory.filterTierPortals('summer', {
+        ['tier'] = ScriptSaved.lobby['delete-tier-portals']['tier'],
+        ['challenge'] = ScriptSaved.lobby['delete-tier-portals']['challenge'],
+    })
+    if (portals) then
+        for k, v in pairs (portals) do
+            table.insert(results, v['uuid']);
+        end
+    end
+    if (#results > 0) then
+        handlers.onDeleteUniqueItems(results);
+    end
+end
+
+local function onJoinPortal(uuid)
+    features.main = true;
+    handlers.onUsePortal(uuid, true);
+    local lobby_id = functions.findLobbyOwner(LocalPlayer);
+    if (lobby_id and (lobby_id ~= '')) then
+        wait(0.25);
+        handlers.onRequestStartGame(lobby_id);
+    else
+        features.main = false;
+    end
+    wait(60);
+    features.main = false;
+end
+
 function onJoinEvent()
-    if (ScriptSaved.join['madoka-portal'].enable) then
-        local portal = inventory.filterMadokaPortal({
-            ['ignore-tier'] = ScriptSaved.join['madoka-portal']['ignore-tier'],
-            ['ignore-challenge'] = ScriptSaved.join['madoka-portal']['ignore-challenge'],
-            ['ignore-buff'] = ScriptSaved.join['madoka-portal']['ignore-buff']
+    if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
+        for _, displayname in pairs (ScriptSaved.main['portal'].selected) do
+            local portal_info = portals.getByName(displayname);
+            local portal = inventory.getUniqueItemIf(function(item)
+                return item.item_id == portal_info.id;
+            end)
+            if (portal) then
+                onJoinPortal(portal.uuid);
+            end
+        end
+    end
+    if (ScriptSaved.main['tier-portal'].enable) then
+        local portal = inventory.filterIgnorePortal('summer', {
+            ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
+            ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
         });
         if (portal) then
-            features.join = true;
-            handlers.onUsePortal(portal['uuid'], true);
-            local lobby_id = functions.findLobbyOwner(LocalPlayer);
-            if (lobby_id and (lobby_id ~= '')) then
-                wait(0.25);
-                handlers.onRequestStartGame(lobby_id);
-            else
-                features.join = false;
-            end
+            onJoinPortal(portal.uuid);
         end
     end
 end
@@ -343,111 +512,193 @@ function checkWave(wave, time)
 end
 
 function onPlayMacro()
-    local json_cache = readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json');
-    if (json_cache) and (json_cache ~= '') and (json_cache ~= '{}') then
-        local macro_cache = HttpService:JSONDecode(json_cache);
-        if (macro_cache) then
-            features['playing-macro'] = true;
-            
-            local stream_index = 1;
-            while((features['playing-macro']) and (task.wait(0.1))) do
-                if not (ScriptSaved.macro.play) then
-                    features['playing-macro'] = false;
-                    break;
-                end
-                local macro_data = macro_cache[tostring(stream_index)];
-                if (macro_data) then
-                    local types = macro_data['type'];
-                    local unit_id = macro_data['unit-id'];
-                    local position = macro_data['position'];
-    
-                    local wave = macro_data['wave'];
-                    local time = macro_data['time'];
-    
-                    local current_money = numbers.format('%.0f', functions.getMoneyInGame());
-    
-                    local unit_data = functions.getDataUnit(unit_id);
-                    
-                    local cost_scale = functions.getCostScale();
-    
-                    if (types == 'spawn_unit') then
-                        local unit = inventory.getEquippedUnit(unit_id);
-    
-                        if (unit) and (current_money >= numbers.format('%.0f', unit_data.cost*cost_scale)) and (checkWave(wave, time)) then
-                            handlers.onSpawnUnitInGame(unit['uuid'], position);
-                            stream_index += 1;
-                        end
-                    elseif (types == 'upgrade_unit') then
-                        local model = functions.findModel(unit_id, position);
-    
-                        if (model) then
-                            local current_upgrade = functions.getUpgradeStage(model);
-                            local unit_upgrade_scale = functions.getUnitUpgradeScale(model);
-                            
-                            local upgrade_stage = unit_data.upgrade[current_upgrade+1];
+    local _gamemode = level_data.getGamemode();
+    local _world = level_data.getWorld();
 
-                            if (upgrade_stage) then
-                                local cost = unit_data.upgrade[current_upgrade+1].cost;
-                                if (current_money >= numbers.format('%.0f', (cost*cost_scale*unit_upgrade_scale))) and (checkWave(wave, time)) then
-                                    handlers.onUpgradeUnitInGame(model);
+    local _waves = level_data.getData().waves;
+
+    local local_macro;
+
+    if (_waves) and (strings.contains(_waves, '_infinite')) then
+        local_macro = ScriptSaved.macro['infinite_tower'][strings.replace(_waves, '_infinite', '')];
+    end
+
+    if (ScriptSaved.macro[_gamemode]) then
+        local_macro = ScriptSaved.macro[_gamemode][_world];
+    end
+
+    local _macro_playing = local_macro and local_macro or ScriptSaved.macro.select;
+
+    if (_macro_playing) then
+        local json_cache = readfile('Lemonade\\AnimeAdventures\\Macros\\'.._macro_playing..'.json');
+        if (json_cache) and (json_cache ~= '') and (json_cache ~= '{}') then
+            local macro_cache = HttpService:JSONDecode(json_cache);
+            if (macro_cache) then
+                features['playing-macro'] = true;
+                notify('Notification', 'Playing macro "'.._macro_playing..'".', 1.5);
+                local stream_index = 1;
+                while((features['playing-macro']) and (task.wait(0.1))) do
+                    if not (ScriptSaved.macro.play) then
+                        features['playing-macro'] = false;
+                        break;
+                    end
+                    local macro_data = macro_cache[tostring(stream_index)];
+                    if (macro_data) then
+                        local types = macro_data['type'];
+                        local unit_id = macro_data['unit-id'];
+                        local position = macro_data['position'];
+        
+                        local wave = macro_data['wave'];
+                        local time = macro_data['time'];
+        
+                        local current_money = numbers.format('%.0f', functions.getMoneyInGame());
+        
+                        local unit_data = functions.getDataUnit(unit_id);
+                        
+                        local cost_scale = functions.getCostScale();
+        
+                        if (types == 'spawn_unit') then
+                            local unit = inventory.getEquippedUnit(unit_id);
+        
+                            if (unit) and (current_money >= numbers.format('%.0f', unit_data.cost*cost_scale)) and (checkWave(wave, time)) then
+                                handlers.onSpawnUnitInGame(unit['uuid'], position);
+                                stream_index += 1;
+                            end
+                        elseif (types == 'upgrade_unit') then
+                            local model = functions.findModel(unit_id, position);
+        
+                            if (model) then
+                                local current_upgrade = functions.getUpgradeStage(model);
+                                local unit_upgrade_scale = functions.getUnitUpgradeScale(model);
+                                
+                                local upgrade_stage = unit_data.upgrade[current_upgrade+1];
+    
+                                if (upgrade_stage) then
+                                    local cost = unit_data.upgrade[current_upgrade+1].cost;
+                                    if (current_money >= numbers.format('%.0f', (cost*cost_scale*unit_upgrade_scale))) and (checkWave(wave, time)) then
+                                        handlers.onUpgradeUnitInGame(model);
+                                        stream_index += 1;
+                                    end
+                                else
                                     stream_index += 1;
                                 end
                             else
+                                print('upgrade-failed');
+                                print('model:', model);
+                                print('unit-id:', unit_id);
+                                print('position:', '{x='..position.x..',y='..position.y..',z='..position.z..'}');
+                                print('stream:', stream_index);
+                            end
+                        elseif (types == 'sell_unit') then
+                            local model = functions.findModel(unit_id, position);
+        
+                            if (model) and (checkWave(wave, time)) then
+                                handlers.onSellUnitInGame(model);
                                 stream_index += 1;
                             end
-                        else
-                            print('upgrade-failed');
-                            print('model:', model);
-                            print('unit-id:', unit_id);
-                            print('stream:', stream_index);
                         end
-                    elseif (types == 'sell_unit') then
-                        local model = functions.findModel(unit_id, position);
-    
-                        if (model) and (checkWave(wave, time)) then
-                            handlers.onSellUnitInGame(model);
-                            stream_index += 1;
-                        end
+                    else
+                        stream_index += 1;
                     end
                 end
             end
+        else
+            notify('Warning', 'Macro "'.._macro_playing..'" is empty', 1.5);
         end
-    else
-        notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" is empty', 1.5);
     end
 end
 
-local function onFinished()
-    if (ScriptSaved.join['madoka-portal'].replay) then
-        local level_data = functions.getLevelData();
-        if (level_data['portal_group'] == 'madoka') then
-            local portal = inventory.filterMadokaPortal({
-                ['ignore-tier'] = ScriptSaved.join['madoka-portal']['ignore-tier'],
-                ['ignore-challenge'] = ScriptSaved.join['madoka-portal']['ignore-challenge'],
-                ['ignore-buff'] = ScriptSaved.join['madoka-portal']['ignore-buff']
-            });
-            if (portal) then
-                features.replay = true;
+local function onReplayPortal(uuid)
+    features.replay = true;
 
-                local args = {
-                    [1] = 'replay',
-                    [2] = {
-                        ['item_uuid'] = portal['uuid']
-                    }
-                }
+    local args = {
+        [1] = 'replay',
+        [2] = {
+            ['item_uuid'] = uuid
+        }
+    }
 
-                wait(5);
-                handlers.onFinishedVote(unpack(args));
-                coroutine.wrap(function()
-                    wait(180);
-                    --game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
-                end)()
-                return;
+    wait(5);
+    handlers.onFinishedVote(unpack(args));
+    
+    coroutine.wrap(function()
+        wait(900);
+        game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+    end)()
+end
+
+function onFinished()
+    local _gamemode = level_data.getGamemode();
+
+    if (_gamemode == 'story') and (ScriptSaved.main.default.replay) then
+        local ResultsUI = librarys.LocalPlayer.PlayerGui.ResultsUI;
+        features.replay = true;
+        if (ResultsUI.Finished.NextLevel.Visible) then
+
+        else
+            local args = {
+                [1] = 'replay'
+            }
+
+            wait(10);
+            handlers.onFinishedVote(unpack(args));
+            coroutine.wrap(function()
+                wait(900);
+                game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+            end)()
+            return;
+        end
+    end
+
+    if (_gamemode == 'infinite') and (ScriptSaved.main.default.replay) then
+        local ResultsUI = librarys.LocalPlayer.PlayerGui.ResultsUI;
+        features.replay = true;
+        if (ResultsUI.Finished.NextLevel.Visible) then
+            
+        else
+            local args = {
+                [1] = 'replay'
+            }
+
+            wait(10);
+            handlers.onFinishedVote(unpack(args));
+            coroutine.wrap(function()
+                wait(900);
+                game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+            end)()
+            return;
+        end
+    end
+
+    if (ScriptSaved.main['portal'].replay) then
+        if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
+            for _, displayname in pairs (ScriptSaved.main['portal'].selected) do
+                local portal_info = portals.getByName(displayname);
+                local portal = inventory.getUniqueItemIf(function(item)
+                    return item.item_id == portal_info.id;
+                end)
+                if (portal) then
+                    onReplayPortal(portal.uuid);
+                end
             end
         end
     end
-    wait(5);
-    game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+
+    if (ScriptSaved.main['tier-portal'].replay) then
+        if (level_data.getData()['portal_group'] == 'summer') then
+            local portal = inventory.filterIgnorePortal('summer', {
+                ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
+                ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
+            });
+            if (portal) then
+                onReplayPortal(portal.uuid);
+            end
+        end
+    end
+    if (ScriptSaved.main.misc['auto-leave']) then
+        wait(5);
+        game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
+    end
 end
 
 function onEvents()
@@ -456,18 +707,72 @@ function onEvents()
 
         local CoreGui = game:GetService('CoreGui');
 
-        print(tables.containsStringValue(CoreGui.RobloxPromptGui.promptOverlay:GetChildren(), 'ErrorPrompt'));
-
-        if (tables.containsStringValue(CoreGui.RobloxPromptGui.promptOverlay:GetChildren(), 'ErrorPrompt')) then
+        if (librarys.tables.containsStringValue(CoreGui.RobloxPromptGui.promptOverlay:GetChildren(), 'ErrorPrompt')) then
             game:GetService('TeleportService'):Teleport(8304191830, LocalPlayer);
         end
     end);
 end
 
+function onUseActive()
+    if (ScriptSaved.main.misc['auto-wendy']) then
+        onAbility('wendy');
+    end
+    if (ScriptSaved.main.misc['auto-erwin']) then
+        onAbility('erwin');
+    end
+    if (ScriptSaved.main.misc['auto-leafa_evolved']) then
+        onAbility('leafa_evolved');
+    end
+end
+
+function onAbility(uuid)
+    if (ScriptSaved.main.misc['auto-'..uuid]) then
+        local abilitys = {}
+        repeat task.wait() until game.Workspace:WaitForChild("_UNITS");
+        for k, v in pairs (game.Workspace['_UNITS']:GetChildren()) do
+            if (v:FindFirstChild('_stats')) and (tostring(v._stats.player.Value) == LocalPlayer.Name) then
+                if (v._stats.id.Value == uuid) then
+                    table.insert(abilitys, v);
+                end
+            end
+        end
+        if (#abilitys < 4) and (features['stack-'..uuid].enabled) then
+            features['stack-'..uuid].enabled = false;
+        end
+        if (#abilitys >= 4) and not (features['stack-'..uuid].enabled) then
+            features['stack-'..uuid].enabled = true;
+            coroutine.wrap(onStackBuffs)(uuid, abilitys);
+        end
+    end
+end
+
+local function onUseBuffs(buffs)
+    handlers.onUseActive(buffs[1]);
+    task.wait(2);
+    handlers.onUseActive(buffs[2]);
+end
+
+function onStackBuffs(uuid, buffs)
+    print((features['stack-'..uuid].enabled));
+    while(ScriptSaved.main.misc['auto-'..uuid] and (features['stack-'..uuid].enabled)) do 
+        boolean = not boolean;
+        local success = pcall(onUseBuffs, (boolean and {buffs[1], buffs[2]} or {buffs[3], buffs[4]}));
+        if not (success) then
+            return;
+        end
+        task.wait(28);
+    end
+end
+
 local ScriptCore = coroutine.create(function()
-    while(task.wait(0.1)) do
+    while(task.wait(0.15)) do
         if not (functions.isLobby()) and not (functions.isGameStarted()) then
             handlers.onVoteStart();
+        end
+
+        if not (functions.isLobby()) and (functions.isGameStarted()) and not (features['teleport-to-top']) and (ScriptSaved.main.misc['teleport-to-top']) then
+            features['teleport-to-top'] = true;
+            functions.teleportTop();
         end
 
         if not (functions.isLobby()) and (functions.isGameStarted()) then
@@ -485,7 +790,13 @@ local ScriptCore = coroutine.create(function()
             end
         end
 
-        if not (features.join) and (functions.isLobby()) then
+        if (functions.isLobby()) then
+            if (ScriptSaved.lobby['delete-tier-portals'].enable) then
+                onAutoDeleteTierPortalsEvent();
+            end
+        end
+
+        if not (features.main) and (functions.isLobby()) then
             coroutine.wrap(onJoinEvent)();
         end
 
@@ -495,6 +806,10 @@ local ScriptCore = coroutine.create(function()
 
         if not (features.replay) and not (functions.isLobby()) and (functions.isGameFinished()) and (game:GetService("Players").LocalPlayer.PlayerGui.ResultsUI.Enabled) then
             coroutine.wrap(onFinished)();
+        end
+
+        if not (functions.isLobby()) then
+            coroutine.wrap(onUseActive)();
         end
     end
 end)
