@@ -1,6 +1,6 @@
 local modules = {}
 
-local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/librarys.lua'))();
+local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/librarys.lua'))();
 local tables = librarys.tables;
 
 local loader = require(game.ReplicatedStorage.src.Loader);

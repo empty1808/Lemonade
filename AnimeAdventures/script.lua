@@ -1,13 +1,13 @@
 local HttpService = game:GetService("HttpService");
-local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/VenyxUI.lua'))();
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/VenyxUI.lua'))();
 
-local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/librarys.lua'))();
+local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/librarys.lua'))();
 
-local maps = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/maps.lua'))();
-local inventory = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/inventory.lua'))();
-local handlers = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/handlers.lua'))();
-local game_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/game_data.lua'))();
-local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/level_data.lua'))();
+local maps = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/maps.lua'))();
+local inventory = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/inventory.lua'))();
+local handlers = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/handlers.lua'))();
+local game_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/game_data.lua'))();
+local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/level_data.lua'))();
 
 local functions = librarys.functions;
 local portals = librarys.portals;

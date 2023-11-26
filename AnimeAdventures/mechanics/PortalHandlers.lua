@@ -1,6 +1,6 @@
 local modules = {};
 
-local tables = loadstring(readfile('Lemonade/AnimeAdventures/librarys/tables.lua'))();
+local tables = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/librarys/tables.lua'))();
 
 local Items = require(game.ReplicatedStorage.src.Data.Items);
 local Portals = tables.filter(Items, function(item)
