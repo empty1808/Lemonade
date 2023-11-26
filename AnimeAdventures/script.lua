@@ -283,7 +283,7 @@ function onMacroSystem(section)
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
         end
-        if (game:HttpGet('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
             return;
@@ -415,7 +415,7 @@ end
 function loadScriptSaved()
     local fileName = 'Lemonade/AnimeAdventures/'..LocalPlayer.Name..'.json';
     if (isfile(fileName)) then
-        local jsonString = game:HttpGet(fileName);
+        local jsonString = readfile(fileName);
         if (jsonString and (jsonString ~= '')) then
             --ScriptSaved = HttpService:JSONDecode(jsonString);
             librarys.tables.copyElement(ScriptSaved, HttpService:JSONDecode(jsonString));
