@@ -815,6 +815,7 @@ local ScriptCore = coroutine.create(function()
 end)
 
 function onEnable()
+    print('Script loading... [Lemonade]')
     loadScriptSaved();
     loadMacro();
     onCreateGUI();
@@ -824,6 +825,7 @@ function onEnable()
     Elements['GUI']:SelectPage(Elements['GUI'].pages[1], true);
 
     coroutine.resume(ScriptCore);
+    print('Script loaded! [Lemonade]')
 end
 
 coroutine.wrap(onEnable)();
