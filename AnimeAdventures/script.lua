@@ -1,13 +1,13 @@
 local HttpService = game:GetService("HttpService");
-local library = loadstring(readfile('Lemonade/AnimeAdventures/VenyxUI.lua'))();
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/VenyxUI.lua'))();
 
-local librarys = loadstring(readfile('Lemonade/AnimeAdventures/librarys.lua'))();
+local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/librarys.lua'))();
 
-local maps = loadstring(readfile('Lemonade/AnimeAdventures/maps.lua'))();
-local inventory = loadstring(readfile('Lemonade/AnimeAdventures/inventory.lua'))();
-local handlers = loadstring(readfile('Lemonade/AnimeAdventures/handlers.lua'))();
-local game_data = loadstring(readfile('Lemonade/AnimeAdventures/game_data.lua'))();
-local level_data = loadstring(readfile('Lemonade/AnimeAdventures/level_data.lua'))();
+local maps = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/maps.lua'))();
+local inventory = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/inventory.lua'))();
+local handlers = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/handlers.lua'))();
+local game_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/game_data.lua'))();
+local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/level_data.lua'))();
 
 local functions = librarys.functions;
 local portals = librarys.portals;
@@ -283,7 +283,7 @@ function onMacroSystem(section)
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
         end
-        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+        if (game:HttpGet('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
             return;
@@ -415,7 +415,7 @@ end
 function loadScriptSaved()
     local fileName = 'Lemonade/AnimeAdventures/'..LocalPlayer.Name..'.json';
     if (isfile(fileName)) then
-        local jsonString = readfile(fileName);
+        local jsonString = game:HttpGet(fileName);
         if (jsonString and (jsonString ~= '')) then
             --ScriptSaved = HttpService:JSONDecode(jsonString);
             librarys.tables.copyElement(ScriptSaved, HttpService:JSONDecode(jsonString));
@@ -530,7 +530,7 @@ function onPlayMacro()
     local _macro_playing = local_macro and local_macro or ScriptSaved.macro.select;
 
     if (_macro_playing) then
-        local json_cache = readfile('Lemonade\\AnimeAdventures\\Macros\\'.._macro_playing..'.json');
+        local json_cache = game:HttpGet('Lemonade\\AnimeAdventures\\Macros\\'.._macro_playing..'.json');
         if (json_cache) and (json_cache ~= '') and (json_cache ~= '{}') then
             local macro_cache = HttpService:JSONDecode(json_cache);
             if (macro_cache) then

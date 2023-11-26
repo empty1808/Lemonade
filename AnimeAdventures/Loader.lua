@@ -1,4 +1,4 @@
-local tables = loadstring(readfile('Lemonade/AnimeAdventures/librarys/tables.lua'))();
+local tables = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/AnimeAdventures/librarys/tables.lua'))();
 
 if not (getgenv()['Lemonade']) then
     getgenv()['Lemonade'] = {
