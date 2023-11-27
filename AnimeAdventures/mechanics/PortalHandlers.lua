@@ -17,10 +17,14 @@ Portals.portal_item__eclipse.avaliable = true;
 Portals.portal_item__fate.avaliable = true;
 Portals.portal_item__gilgamesh.avaliable = true;
 
-function modules.getPortals()
+function modules.getAvaliablePortals()
     return tables.filter(Portals, function(element)
         return element.avaliable;
     end);
+end
+
+function modules.getPortals()
+    return Portals;
 end
 
 function modules.getSinglePortals() 
@@ -36,7 +40,7 @@ function modules.getTierPortals()
 end
 
 function modules.getByName(displayname)
-    for k, v in pairs (modules.getPortals()) do
+    for k, v in pairs (modules.getAvaliablePortals()) do
         if (v.name == displayname) then
             return v;
         end
@@ -44,7 +48,7 @@ function modules.getByName(displayname)
 end
 
 function modules.getById(id)
-    for k, v in pairs (modules.getPortals()) do
+    for k, v in pairs (modules.getAvaliablePortals()) do
         if (v.id == displayname) then
             return v;
         end
