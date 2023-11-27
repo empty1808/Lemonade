@@ -19,7 +19,7 @@ Portals.portal_item__gilgamesh.avaliable = true;
 Portals.portal_item__bsd.avaliable = true;
 Portals.portal_item__dazai.avaliable = true;
 
-Portal.portal_item__bsd.tier = true;
+Portals.portal_item__bsd.tier = true;
 
 function modules.getAvaliablePortals()
     return tables.filter(Portals, function(element)
