@@ -64,9 +64,9 @@ function modules.getUniqueItemIf(condition)
     end
 end
 
-function modules.getPortals(id)
+function modules.getUniqueItemById(id)
     return modules.getUniqueItemsIf(function(item)
-        if (item['item_id'] == 'portal_'..id) then
+        if (item['item_id'] == id) then
             return true;
         end
     end)
@@ -74,7 +74,7 @@ end
 
 function modules.filterIgnorePortal(portal_id, filters)
     filters = tables.copyElement({}, filters);
-    for _, portal in pairs (modules.getPortals(portal_id)) do
+    for _, portal in pairs (modules.getUniqueItemById(portal_id)) do
         local data = portal['_unique_item_data']['_unique_portal_data'];
         tables.replace(filters['ignore-challenge'], 'high_cost', 'double_cost');
         if ((not tables.containsValue(filters['ignore-tier'], data['portal_depth'])) and (not tables.containsValue(filters['ignore-challenge'], data['challenge']))) then
@@ -86,7 +86,7 @@ end
 function modules.filterTierPortals(portal_id, filters)
     filters = tables.copyElement({}, filters);
     local portals = {};
-    for _, portal in pairs (modules.getPortals(portal_id)) do
+    for _, portal in pairs (modules.getUniqueItemById(portal_id)) do
         local data = portal['_unique_item_data']['_unique_portal_data'];
         tables.replace(filters['challenge'], 'high_cost', 'double_cost');
         if ((tables.containsValue(filters['tier'], data['portal_depth'])) or (tables.containsValue(filters['challenge'], data['challenge']))) then

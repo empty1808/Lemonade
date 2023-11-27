@@ -140,7 +140,7 @@ function onPortal(section)
     section:addToggle('Enable', features['enable'], function(toggle)
         ScriptSaved.main['portal'].enable = toggle;
     end)
-    local selected = section:addSelectDropdown('Selected', portals_name, features['selected'], function(selected)
+    local selected = section:addSelectDropdown('Select', portals_name, features['selected'], function(selected)
         ScriptSaved.main['portal']['selected'] = selected;
     end)
     local replay = section:addToggle('Replay', features['replay'], function(toggle)
@@ -153,25 +153,25 @@ function onTierPortal(section)
         return element.name;
     end);
     local Features = ScriptSaved.main['tier-portal'];
-    local Enable = section:addToggle('enabled', Features.enable, function(toggle)
+    local Enable = section:addToggle('Enable', Features.enable, function(toggle)
         ScriptSaved.main['tier-portal'].enable = toggle;
     end)
-    local selected = section:addSelectDropdown('Selected', portals_name, features['selected'], function(selected)
-        ScriptSaved.main['tier-portal']['selected'] = selected;
+    local selected = section:addSelectDropdown('Select', portals_name, features['selected'], function(selected)
+        ScriptSaved.main['tier-portal']['Selected'] = selected;
     end)
-    local Tier = section:addSelectDropdown('ign tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['ignore-tier'], function(selected)
+    local Tier = section:addSelectDropdown('Ign Tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['ignore-tier'], function(selected)
         ScriptSaved.main['tier-portal']['ignore-tier'] = selected;
     end)
-    local Challenge section:addSelectDropdown('ign challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['ignore-challenge'], function(selected)
+    local Challenge section:addSelectDropdown('Ign Challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['ignore-challenge'], function(selected)
         ScriptSaved.main['tier-portal']['ignore-challenge'] = selected;
     end)
-    local Replay = section:addToggle('replay', Features.replay, function(toggle)
+    local Replay = section:addToggle('Replay', Features.replay, function(toggle)
         ScriptSaved.main['tier-portal'].replay = toggle;
     end)
 end
 
 function onMiscSection(section)
-    section:addToggle('auto leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
+    section:addToggle('Auto leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
         ScriptSaved.main.misc['auto-leave'] = toggle;
     end)
 
@@ -214,14 +214,21 @@ function onLobbyPage(page)
 end
 
 function onAutoDeleteTierPortals(section)
+    local portals_name = tables.getIf(portals.getTierPortals(), function(element)
+        return element.name;
+    end);
+    
     local Features = ScriptSaved.lobby['delete-tier-portals'];
-    local Enable = section:addToggle('enabled', Features.enable, function(toggle)
+    local Enable = section:addToggle('Enable', Features.enable, function(toggle)
         ScriptSaved.lobby['delete-tier-portals'].enable = toggle;
     end)
-    local Tier = section:addSelectDropdown('tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['tier'], function(selected)
+    local Selected = section:addSelectDropdown('Select', portals_name, Features['selected'], function(selected)
+        ScriptSaved.lobby['delete-tier-portals'].selected = selected;
+    end)
+    local Tier = section:addSelectDropdown('Tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['tier'], function(selected)
         ScriptSaved.lobby['delete-tier-portals']['tier'] = selected;
     end)
-    local Challenge section:addSelectDropdown('challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['challenge'], function(selected)
+    local Challenge section:addSelectDropdown('Challenge', {'tank_enemies', 'fast_enemies', 'shield_enemies', 'regen_enemies', 'short_range', 'high_cost'}, Features['challenge'], function(selected)
         ScriptSaved.lobby['delete-tier-portals']['challenge'] = selected;
     end)
 end
@@ -458,17 +465,22 @@ end
 
 function onAutoDeleteTierPortalsEvent()
     local results = {};
-    local portals = inventory.filterTierPortals('summer', {
-        ['tier'] = ScriptSaved.lobby['delete-tier-portals']['tier'],
-        ['challenge'] = ScriptSaved.lobby['delete-tier-portals']['challenge'],
-    })
-    if (portals) then
-        for k, v in pairs (portals) do
-            table.insert(results, v['uuid']);
+    if (ScriptSaved.lobby['delete-tier-portals'].enable) and (tables.getLength(ScriptSaved.lobby['delete-tier-portals'].selected) > 0) then
+        for _, portal_name in pairs (ScriptSaved.lobby['delete-tier-portals'].selected) do
+            local portal_info = portals.getByName(portal_name);
+            local portals = inventory.filterTierPortals(portal_info.id, {
+                ['tier'] = ScriptSaved.lobby['delete-tier-portals']['tier'],
+                ['challenge'] = ScriptSaved.lobby['delete-tier-portals']['challenge'],
+            })
+            if (portals) then
+                for k, v in pairs (portals) do
+                    table.insert(results, v['uuid']);
+                end
+            end
+            if (#results > 0) then
+                handlers.onDeleteUniqueItems(results);
+            end
         end
-    end
-    if (#results > 0) then
-        handlers.onDeleteUniqueItems(results);
     end
 end
 
@@ -487,9 +499,9 @@ local function onJoinPortal(uuid)
 end
 
 function onJoinEvent()
-    if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
-        for _, displayname in pairs (ScriptSaved.main['portal'].selected) do
-            local portal_info = portals.getByName(displayname);
+    if (ScriptSaved.main['portal'].enable) and (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
+        for _, portal_name in pairs (ScriptSaved.main['portal'].selected) do
+            local portal_info = portals.getByName(portal_name);
             local portal = inventory.getUniqueItemIf(function(item)
                 return item.item_id == portal_info.id;
             end)
@@ -498,13 +510,16 @@ function onJoinEvent()
             end
         end
     end
-    if (ScriptSaved.main['tier-portal'].enable) then
-        local portal = inventory.filterIgnorePortal('summer', {
-            ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
-            ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
-        });
-        if (portal) then
-            onJoinPortal(portal.uuid);
+    if (ScriptSaved.main['tier-portal'].enable) and (tables.getLength(ScriptSaved.main['tier-portal'].selected) > 0) then
+        for _, portal_name in pairs (ScriptSaved.main['tier-portal'].selected) do
+            local portal_info = portals.getByName(portal_name);
+            local portal = inventory.filterIgnorePortal(portal_info.id, {
+                ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
+                ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
+            });
+            if (portal) then
+                onJoinPortal(portal.uuid);
+            end
         end
     end
 end
@@ -693,13 +708,16 @@ function onFinished()
     end
 
     if (ScriptSaved.main['tier-portal'].replay) then
-        if (level_data.getData()['portal_group'] == 'summer') then
-            local portal = inventory.filterIgnorePortal('summer', {
-                ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
-                ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
-            });
-            if (portal) then
-                onReplayPortal(portal.uuid);
+        if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
+            for _, displayname in pairs (ScriptSaved.main['tier-portal'].selected) do
+                local portal_info = portals.getByName(displayname);
+                local portal = inventory.filterIgnorePortal(portal_info.id, {
+                    ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
+                    ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
+                });
+                if (portal) then
+                    onReplayPortal(portal.uuid);
+                end
             end
         end
     end
