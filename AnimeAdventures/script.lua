@@ -28,11 +28,13 @@ local ScriptSaved = {
             ['replay'] = false
         },
         ['portal'] = {
+            ['enable'] = false,
             ['selected'] = {},
             ['replay'] = false
         },
         ['tier-portal'] = {
             ['enable'] = false,
+            ['selected'] = {},
             ['ignore-tier'] = {},
             ['ignore-challenge'] = {},
             ['replay'] = false
@@ -46,6 +48,7 @@ local ScriptSaved = {
     ['lobby'] = {
         ['delete-tier-portals'] = {
             ['enable'] = false,
+            ['selected'] = {},
             ['tier'] = {},
             ['challenge'] = {}
         },
@@ -343,7 +346,7 @@ function onSettingPage(page)
 end
 
 function onSettingDefault(section)
-    section:addKeybind('Toggle Keybind', Enum.KeyCode.Delete, function()
+    section:addKeybind('Toggle Keybind', Enum.KeyCode.RightBracket, function()
         Elements['GUI']:toggle();
     end)
 end
