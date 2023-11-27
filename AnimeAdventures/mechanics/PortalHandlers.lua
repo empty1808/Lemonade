@@ -16,6 +16,10 @@ Portals.portal_item__dressrosa.avaliable = true;
 Portals.portal_item__eclipse.avaliable = true;
 Portals.portal_item__fate.avaliable = true;
 Portals.portal_item__gilgamesh.avaliable = true;
+Portals.portal_item__bsd.avaliable = true;
+Portals.portal_item__dazai.avaliable = true;
+
+Portal.portal_item__bsd.tier = true;
 
 function modules.getAvaliablePortals()
     return tables.filter(Portals, function(element)

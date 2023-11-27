@@ -136,8 +136,10 @@ function onPortal(section)
     local portals_name = tables.getIf(portals.getSinglePortals(), function(element)
         return element.name;
     end);
-
     local features = ScriptSaved.main['portal'];
+    section:addToggle('Enable', features['enable'], function(toggle)
+        ScriptSaved.main['portal'].enable = toggle;
+    end)
     local selected = section:addSelectDropdown('Selected', portals_name, features['selected'], function(selected)
         ScriptSaved.main['portal']['selected'] = selected;
     end)
@@ -147,9 +149,15 @@ function onPortal(section)
 end
 
 function onTierPortal(section)
+    local portals_name = tables.getIf(portals.getTierPortals(), function(element)
+        return element.name;
+    end);
     local Features = ScriptSaved.main['tier-portal'];
     local Enable = section:addToggle('enabled', Features.enable, function(toggle)
         ScriptSaved.main['tier-portal'].enable = toggle;
+    end)
+    local selected = section:addSelectDropdown('Selected', portals_name, features['selected'], function(selected)
+        ScriptSaved.main['tier-portal']['selected'] = selected;
     end)
     local Tier = section:addSelectDropdown('ign tier', {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, Features['ignore-tier'], function(selected)
         ScriptSaved.main['tier-portal']['ignore-tier'] = selected;
