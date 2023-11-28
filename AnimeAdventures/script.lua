@@ -40,6 +40,7 @@ local ScriptSaved = {
             ['replay'] = false
         },
         ['misc'] = {
+            ['auto-start'] = false,
             ['auto-leave'] = false,
             ['auto-stack-wendy'] = false,
             ['auto-stack-erwin'] = false
@@ -114,6 +115,7 @@ function onMainPage(page)
     onDefault(page:addSection('Default'));
     onPortal(page:addSection('Portal'));
     onTierPortal(page:addSection('Tier Portal'));
+    onBuffSection(page:addSection('Stack Buff'));
     onMiscSection(page:addSection('Misc'));
 end
 
@@ -173,11 +175,7 @@ function onTierPortal(section)
     end)
 end
 
-function onMiscSection(section)
-    section:addToggle('Auto leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
-        ScriptSaved.main.misc['auto-leave'] = toggle;
-    end)
-
+function onBuffSection(section)
     section:addToggle('Auto Wenda', ScriptSaved.main.misc['auto-wendy'], function(toggle)
         ScriptSaved.main.misc['auto-wendy'] = toggle;
         if not (toggle) then 
@@ -197,6 +195,16 @@ function onMiscSection(section)
         if not (toggle) then 
             features['stack-leafa_evolved'].enabled = false;
         end
+    end)
+end
+
+function onMiscSection(section)
+    section:addToggle('Auto Leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
+        ScriptSaved.main.misc['auto-leave'] = toggle;
+    end)
+
+    section:addToggle('Auto Start', ScriptSaved.main.misc['auto-start'], function(toggle)
+        ScriptSaved.main.misc['auto-start'] = toggle;
     end)
 
     section:addToggle('Teleport to Top [FPS Boost]', ScriptSaved.main.misc['teleport-to-top'], function(toggle)
@@ -795,7 +803,7 @@ end
 
 local ScriptCore = coroutine.create(function()
     while(task.wait(0.15)) do
-        if not (functions.isLobby()) and not (functions.isGameStarted()) then
+        if not (functions.isLobby()) and not (functions.isGameStarted()) and (ScriptSaved.main.misc['auto-start']) then
             handlers.onVoteStart();
         end
 
