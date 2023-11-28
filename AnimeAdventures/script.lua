@@ -663,7 +663,7 @@ end
 
 function onFinished()
     local _gamemode = level_data.getGamemode();
-
+    print('finished 1');
     if (_gamemode == 'story') and (ScriptSaved.main.default.replay) then
         local ResultsUI = librarys.LocalPlayer.PlayerGui.ResultsUI;
         features.replay = true;
@@ -683,6 +683,7 @@ function onFinished()
             return;
         end
     end
+    print('finished 2');
 
     if (_gamemode == 'infinite') and (ScriptSaved.main.default.replay) then
         local ResultsUI = librarys.LocalPlayer.PlayerGui.ResultsUI;
@@ -703,11 +704,12 @@ function onFinished()
             return;
         end
     end
+    print('finished 3');
 
     if (ScriptSaved.main['portal'].replay) then
         if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
-            for _, displayname in pairs (ScriptSaved.main['portal'].selected) do
-                local portal_info = portals.getByName(displayname);
+            for _, portal_name in pairs (ScriptSaved.main['portal'].selected) do
+                local portal_info = portals.getByName(portal_name);
                 local portal = inventory.getUniqueItemIf(function(item)
                     return item.item_id == portal_info.id;
                 end)
@@ -717,12 +719,13 @@ function onFinished()
             end
         end
     end
+    print('finished 4');
 
     if (ScriptSaved.main['tier-portal'].replay) then
         if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
             print('finding portal....');
-            for _, displayname in pairs (ScriptSaved.main['tier-portal'].selected) do
-                local portal_info = portals.getByName(displayname);
+            for _, portal_name in pairs (ScriptSaved.main['tier-portal'].selected) do
+                local portal_info = portals.getByName(portal_name);
                 local portal = inventory.filterIgnorePortal(portal_info.id, {
                     ['ignore-tier'] = ScriptSaved.main['tier-portal']['ignore-tier'],
                     ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
