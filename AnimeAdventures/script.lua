@@ -720,6 +720,7 @@ function onFinished()
 
     if (ScriptSaved.main['tier-portal'].replay) then
         if (tables.getLength(ScriptSaved.main['portal'].selected) > 0) then
+            print('finding portal....');
             for _, displayname in pairs (ScriptSaved.main['tier-portal'].selected) do
                 local portal_info = portals.getByName(displayname);
                 local portal = inventory.filterIgnorePortal(portal_info.id, {
@@ -727,6 +728,7 @@ function onFinished()
                     ['ignore-challenge'] = ScriptSaved.main['tier-portal']['ignore-challenge']
                 });
                 if (portal) then
+                    print('finded portal [UUID='..portal.uuid..']');
                     onReplayPortal(portal.uuid);
                 end
             end
