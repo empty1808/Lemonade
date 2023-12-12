@@ -336,7 +336,7 @@ function onMacroSystem(section)
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
         end
-        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+        if (toggle) and (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
             return;
