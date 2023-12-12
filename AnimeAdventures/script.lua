@@ -27,6 +27,11 @@ local ScriptSaved = {
             ['difficult'] = nil,
             ['replay'] = false
         },
+        ['dungeon'] = {
+            ['enable'] = false,
+            ['selected'] = {},
+            ['replay'] = false
+        },
         ['portal'] = {
             ['enable'] = false,
             ['selected'] = {},
@@ -139,15 +144,24 @@ function onDefault(section)
 end
 
 function onDungeon(section)
-    section:addToggle('Enable', ScriptSaved.main.default.enable, function(toggle)
-        ScriptSaved.main.default.enable = toggle;
+    print('true 1')
+    local dungeons_name = tables.getIf(dungeons.getDungeons(), function(element)
+        return element.name;
     end)
-    section:addDropdown('Select', game_data.getInfiniteWorldId(), nil, function(text)
-        
+    local features = ScriptSaved.main['dungeon'];
+    section:addToggle('Enable', features['enable'], function(toggle)
+        ScriptSaved.main['dungeon'].enable = toggle;
     end)
-    section:addToggle('Replay', features['replay'], function(toggle)
-        ScriptSaved.main['portal'].replay = toggle;
+    section:addDropdown('Select', dungeons_name, features['selected'], function(text)
+
     end)
+    section:addToggle('Match', features.match, function(toggle)
+        ScriptSaved.main['dungeon'].match = toggle;
+    end)
+    section:addToggle('Replay', features.replay, function(toggle)
+        ScriptSaved.main['dungeon'].replay = toggle;
+    end)
+    print('true 2')
 end
 
 
