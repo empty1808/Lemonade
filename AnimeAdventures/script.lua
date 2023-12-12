@@ -11,7 +11,6 @@ local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/em
 
 local functions = librarys.functions;
 local portals = librarys.portals;
-local dungeons = librarys.dungeons;
 
 local strings = librarys.strings;
 local tables = librarys.tables;
@@ -26,11 +25,6 @@ local ScriptSaved = {
             ['selected'] = nil,
             ['stage'] = nil,
             ['difficult'] = nil,
-            ['replay'] = false
-        },
-        ['dungeon'] = {
-            ['enable'] = false,
-            ['selected'] = {},
             ['replay'] = false
         },
         ['portal'] = {
@@ -145,21 +139,14 @@ function onDefault(section)
 end
 
 function onDungeon(section)
-    local dungeons_name = tables.getIf(dungeons.getDungeons(), function(element)
-        return element.name;
+    section:addToggle('Enable', ScriptSaved.main.default.enable, function(toggle)
+        ScriptSaved.main.default.enable = toggle;
     end)
-    local features = ScriptSaved.main['dungeon'];
-    section:addToggle('Enable', features.enable, function(toggle)
-        ScriptSaved.main['dungeon'].enable = toggle;
-    end)
-    section:addDropdown('Select', dungeons_name, features.selected, function(text)
+    section:addDropdown('Select', game_data.getInfiniteWorldId(), nil, function(text)
         
     end)
-    section:addToggle('Match', features.match, function(toggle)
-        ScriptSaved.main['dungeon'].match = toggle;
-    end)
-    section:addToggle('Replay', features.replay, function(toggle)
-        ScriptSaved.main['dungeon'].replay = toggle;
+    section:addToggle('Replay', features['replay'], function(toggle)
+        ScriptSaved.main['portal'].replay = toggle;
     end)
 end
 
@@ -335,9 +322,8 @@ function onMacroSystem(section)
             macro.cache.length = 0;
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
-            return;
         end
-        if (toggle) and (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
             return;
