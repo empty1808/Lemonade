@@ -11,6 +11,7 @@ local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/em
 
 local functions = librarys.functions;
 local portals = librarys.portals;
+local dungeons = librarys.dungeons;
 
 local strings = librarys.strings;
 local tables = librarys.tables;
@@ -148,6 +149,7 @@ function onDungeon(section)
     local dungeons_name = tables.getIf(dungeons.getDungeons(), function(element)
         return element.name;
     end)
+    print('true 2')
     local features = ScriptSaved.main['dungeon'];
     section:addToggle('Enable', features['enable'], function(toggle)
         ScriptSaved.main['dungeon'].enable = toggle;
@@ -161,7 +163,7 @@ function onDungeon(section)
     section:addToggle('Replay', features.replay, function(toggle)
         ScriptSaved.main['dungeon'].replay = toggle;
     end)
-    print('true 2')
+    print('true 3')
 end
 
 
