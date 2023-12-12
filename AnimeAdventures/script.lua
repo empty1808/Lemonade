@@ -145,28 +145,22 @@ function onDefault(section)
 end
 
 function onDungeon(section)
-    print('true 1')
     local dungeons_name = tables.getIf(dungeons.getDungeons(), function(element)
         return element.name;
     end)
-    print('true 2')
     local features = ScriptSaved.main['dungeon'];
     section:addToggle('Enable', features['enable'], function(toggle)
         ScriptSaved.main['dungeon'].enable = toggle;
     end)
-    print('true 3')
-    section:addDropdown('Select', dungeons_name, features['selected'], function(text)
-
+    section:addSelectDropdown('Select', dungeons_name, features['selected'], function(text)
+        
     end)
-    print('true 4')
     section:addToggle('Match', features.match, function(toggle)
         ScriptSaved.main['dungeon'].match = toggle;
     end)
-    print('true 5')
     section:addToggle('Replay', features.replay, function(toggle)
         ScriptSaved.main['dungeon'].replay = toggle;
     end)
-    print('true 6')
 end
 
 
