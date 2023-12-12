@@ -13,5 +13,6 @@ modules.numbers = loadlibrary('librarys/numbers.lua');
 modules.functions = loadlibrary('mechanics/functions.lua');
 modules.handlers = loadlibrary('mechanics/handlers.lua');
 modules.portals = loadlibrary('mechanics/PortalHandlers.lua');
+modules.dungeons = loadlibrary('mechanics/Dungeon.lua');
 
 return modules;

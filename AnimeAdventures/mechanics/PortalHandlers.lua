@@ -15,7 +15,6 @@ Portals.portal_zeldris.avaliable = true;
 Portals.portal_item__dressrosa.avaliable = true;
 Portals.portal_item__eclipse.avaliable = true;
 Portals.portal_item__fate.avaliable = true;
-Portals.portal_item__gilgamesh.avaliable = true;
 Portals.portal_item__bsd.avaliable = true;
 Portals.portal_item__dazai.avaliable = true;
 

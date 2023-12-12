@@ -11,6 +11,7 @@ local level_data = loadstring(game:HttpGet('https://raw.githubusercontent.com/em
 
 local functions = librarys.functions;
 local portals = librarys.portals;
+local dungeons = librarys.dungeons;
 
 local strings = librarys.strings;
 local tables = librarys.tables;
@@ -25,6 +26,11 @@ local ScriptSaved = {
             ['selected'] = nil,
             ['stage'] = nil,
             ['difficult'] = nil,
+            ['replay'] = false
+        },
+        ['dungeon'] = {
+            ['enable'] = false,
+            ['selected'] = {},
             ['replay'] = false
         },
         ['portal'] = {
@@ -113,6 +119,7 @@ function onMainPage(page)
     --local Challenge = page:addSection('Challenge');
 
     onDefault(page:addSection('Default'));
+    onDungeon(page:addSection('Dungeon'));
     onPortal(page:addSection('Portal'));
     onTierPortal(page:addSection('Tier Portal'));
     onBuffSection(page:addSection('Stack Buff'));
@@ -123,19 +130,39 @@ function onDefault(section)
     section:addToggle('Enable', ScriptSaved.main.default.enable, function(toggle)
         ScriptSaved.main.default.enable = toggle;
     end)
-    section:addDropdown('selected', game_data.getInfiniteWorldId(), nil, function(text)
+    section:addDropdown('Select', game_data.getInfiniteWorldId(), nil, function(text)
         
     end)
-    section:addDropdown('stage', {'infinite', 'act-1', 'act-2', 'act-3', 'act-4', 'act-5', 'act-6'}, nil, function(selected)
+    section:addDropdown('Stage', {'infinite', 'act-1', 'act-2', 'act-3', 'act-4', 'act-5', 'act-6'}, nil, function(selected)
         print(selected)
     end)
-    section:addDropdown('difficult', {'easy', 'hard'}, nil, function(selected)
+    section:addDropdown('Difficult', {'easy', 'hard'}, nil, function(selected)
         
     end)
     section:addToggle('Next/Replay', ScriptSaved.main.default.replay, function(toggle)
         ScriptSaved.main.default.replay = toggle;
     end)
 end
+
+function onDungeon(section)
+    local dungeons_name = tables.getIf(dungeons.getDungeons(), function(element)
+        return element.name;
+    end)
+    local features = ScriptSaved.main['dungeon'];
+    section:addToggle('Enable', features.enable, function(toggle)
+        ScriptSaved.main['dungeon'].enable = toggle;
+    end)
+    section:addDropdown('Select', dungeons_name, features.selected, function(text)
+        
+    end)
+    section:addToggle('Match', features.match, function(toggle)
+        ScriptSaved.main['dungeon'].match = toggle;
+    end)
+    section:addToggle('Replay', features.replay, function(toggle)
+        ScriptSaved.main['dungeon'].replay = toggle;
+    end)
+end
+
 
 function onPortal(section)
     local portals_name = tables.getIf(portals.getSinglePortals(), function(element)
@@ -308,8 +335,9 @@ function onMacroSystem(section)
             macro.cache.length = 0;
             macro.cache.tables = {};
             notify('Notification', 'Macro "'..ScriptSaved.macro.select..'" has been recorded.', 1.5)
+            return;
         end
-        if (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
+        if (toggle) and (readfile('Lemonade\\AnimeAdventures\\Macros\\'..ScriptSaved.macro.select..'.json') ~= '{}') then
             section:updateToggle(modules['record'], 'record', false);
             notify('Warning', 'Macro "'..ScriptSaved.macro.select..'" not empty.', 1.5)
             return;
