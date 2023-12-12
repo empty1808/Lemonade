@@ -154,16 +154,19 @@ function onDungeon(section)
     section:addToggle('Enable', features['enable'], function(toggle)
         ScriptSaved.main['dungeon'].enable = toggle;
     end)
+    print('true 3')
     section:addDropdown('Select', dungeons_name, features['selected'], function(text)
 
     end)
+    print('true 4')
     section:addToggle('Match', features.match, function(toggle)
         ScriptSaved.main['dungeon'].match = toggle;
     end)
+    print('true 5')
     section:addToggle('Replay', features.replay, function(toggle)
         ScriptSaved.main['dungeon'].replay = toggle;
     end)
-    print('true 3')
+    print('true 6')
 end
 
 
