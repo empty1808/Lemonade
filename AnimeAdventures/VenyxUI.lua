@@ -2291,7 +2291,7 @@ do
 				utility:Tween(section.container.Title, {TextTransparency = 0}, 0.1)
 				section:Resize(true)
 				
-				wait(0.05)
+				wait()
 			end
 			print('open page');
 			page:Resize(true)
