@@ -231,7 +231,7 @@ function onBuffSection(section)
 end
 
 function onActiveSection(section)
-    section:addToggle('Auto Leafy', ScriptSaved.main.misc['auto-leafa_evolved'], function(toggle)
+    section:addToggle('Auto Homura', ScriptSaved.main.misc['auto-leafa_evolved'], function(toggle)
         ScriptSaved.main['auto-active']['auto-homura'] = toggle;
     end)
 end
@@ -248,9 +248,9 @@ function onMiscSection(section)
     section:addToggle('Teleport to Top [FPS Boost]', ScriptSaved.main.misc['teleport-to-top'], function(toggle)
         ScriptSaved.main.misc['teleport-to-top'] = toggle;
         if not (toggle) then
+            features['teleport-to-top'] = false;
             local spawn = game.Workspace.initial_spawn;
             classes.Players.to(LocalPlayer, {spawn.CFrame.X, (spawn.CFrame.Y+2), spawn.CFrame.Z});
-            features['teleport-to-top'] = false;
         end
     end)
 end
