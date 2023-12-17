@@ -2290,6 +2290,8 @@ do
 			
 				utility:Tween(section.container.Title, {TextTransparency = 0}, 0.1)
 				section:Resize(true)
+				
+				wait(0.05)
 			end
 			
 			page:Resize(true)
