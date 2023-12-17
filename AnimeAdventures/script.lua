@@ -2,6 +2,7 @@ local HttpService = game:GetService("HttpService");
 local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/VenyxUI.lua'))();
 
 local librarys = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/librarys.lua'))();
+local classes = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/class/Classes.lua'))();
 
 local maps = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/maps.lua'))();
 local inventory = loadstring(game:HttpGet('https://raw.githubusercontent.com/empty1808/Lemonade/main/AnimeAdventures/inventory.lua'))();
@@ -50,6 +51,9 @@ local ScriptSaved = {
             ['auto-leave'] = false,
             ['auto-stack-wendy'] = false,
             ['auto-stack-erwin'] = false
+        },
+        ['auto-active'] = {
+            ['auto-homura'] = false
         }
     },
     ['lobby'] = {
@@ -123,6 +127,7 @@ function onMainPage(page)
     onPortal(page:addSection('Portal'));
     onTierPortal(page:addSection('Tier Portal'));
     onBuffSection(page:addSection('Stack Buff'));
+    onActiveSection(page:addSection('Auto Active'));
     onMiscSection(page:addSection('Misc'));
 end
 
@@ -225,6 +230,12 @@ function onBuffSection(section)
     end)
 end
 
+function onActiveSection(section)
+    section:addToggle('Auto Homura', ScriptSaved.main.misc['auto-leafa_evolved'], function(toggle)
+        ScriptSaved.main.auto_active['auto-homura'] = toggle;
+    end)
+end
+
 function onMiscSection(section)
     section:addToggle('Auto Leave', ScriptSaved.main.misc['auto-leave'], function(toggle)
         ScriptSaved.main.misc['auto-leave'] = toggle;
@@ -237,6 +248,8 @@ function onMiscSection(section)
     section:addToggle('Teleport to Top [FPS Boost]', ScriptSaved.main.misc['teleport-to-top'], function(toggle)
         ScriptSaved.main.misc['teleport-to-top'] = toggle;
         if not (toggle) then
+            local spawn = game.Workspace.initial_spawn;
+            classes.Players.to(LocalPlayer, {spawn.CFrame.X, (spawn.CFrame.Y+2), spawn.CFrame.Z});
             features['teleport-to-top'] = false;
         end
     end)
@@ -778,33 +791,47 @@ end
 
 function onUseActive()
     if (ScriptSaved.main.misc['auto-wendy']) then
-        onAbility('wendy');
+        onStackAbility('wendy');
     end
     if (ScriptSaved.main.misc['auto-erwin']) then
-        onAbility('erwin');
+        onStackAbility('erwin');
     end
     if (ScriptSaved.main.misc['auto-leafa_evolved']) then
-        onAbility('leafa_evolved');
+        onStackAbility('leafa_evolved');
+    end
+    if (ScriptSaved.main.auto_active['auto-homura']) then
+        onAutoActive('homura_evolved');
     end
 end
 
-function onAbility(uuid)
-    if (ScriptSaved.main.misc['auto-'..uuid]) then
+function onAutoActive(id)
+    repeat task.wait() until game.Workspace:WaitForChild("_UNITS");
+    for k, v in pairs (game.Workspace['_UNITS']:GetChildren()) do
+        if (v:FindFirstChild('_stats')) and (tostring(v._stats.player.Value) == LocalPlayer.Name) then
+            if (v._stats.id.Value == id) then
+                handlers.onUseActive(v);
+            end
+        end
+    end
+end
+
+function onStackAbility(id)
+    if (ScriptSaved.main.misc['auto-'..id]) then
         local abilitys = {}
         repeat task.wait() until game.Workspace:WaitForChild("_UNITS");
         for k, v in pairs (game.Workspace['_UNITS']:GetChildren()) do
             if (v:FindFirstChild('_stats')) and (tostring(v._stats.player.Value) == LocalPlayer.Name) then
-                if (v._stats.id.Value == uuid) then
+                if (v._stats.id.Value == id) then
                     table.insert(abilitys, v);
                 end
             end
         end
-        if (#abilitys < 4) and (features['stack-'..uuid].enabled) then
-            features['stack-'..uuid].enabled = false;
+        if (#abilitys < 4) and (features['stack-'..id].enabled) then
+            features['stack-'..id].enabled = false;
         end
-        if (#abilitys >= 4) and not (features['stack-'..uuid].enabled) then
-            features['stack-'..uuid].enabled = true;
-            coroutine.wrap(onStackBuffs)(uuid, abilitys);
+        if (#abilitys >= 4) and not (features['stack-'..id].enabled) then
+            features['stack-'..id].enabled = true;
+            coroutine.wrap(onStackBuffs)(id, abilitys);
         end
     end
 end
