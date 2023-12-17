@@ -37,7 +37,7 @@ local function SetUUID(instance)
 end
 
 local function GetUUID(instance)
-	local uuid = instance:GetAttribute('UUID', uuid);
+	local uuid = instance:GetAttribute('UUID');
 	return uuid;
 end
 
@@ -2271,7 +2271,6 @@ do
 				end
 			end
 			
-			wait(0.1)
 			page.container.Visible = true
 			
 			if focusedPage then
@@ -2287,17 +2286,12 @@ do
 				end
 			end
 			
-			wait(0.05)
-			
 			for i, section in pairs(page.sections) do
 			
 				utility:Tween(section.container.Title, {TextTransparency = 0}, 0.1)
 				section:Resize(true)
-				
-				wait(0.05)
 			end
 			
-			wait(0.05)
 			page:Resize(true)
 		else
 			-- page button
