@@ -2293,7 +2293,7 @@ do
 				
 				wait(0.05)
 			end
-			
+			print('open page');
 			page:Resize(true)
 		else
 			-- page button
@@ -2310,9 +2310,8 @@ do
 				utility:Tween(section.container.Title, {TextTransparency = 1}, 0.1)
 			end
 			
-			wait(0.1)
-			
 			page.lastPosition = page.container.CanvasPosition.Y
+			print('close page');
 			page:Resize()
 		end
 	end
